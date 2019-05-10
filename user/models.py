@@ -1,21 +1,60 @@
+import uuid as uuid
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 # Create your models here.
 
 
-class User(models.Model):
-    username = models.CharField(max_length=30, null=False)
-    password = models.TextField()
-    email = models.CharField(max_length=100, null=False)
+class MyUserManager(BaseUserManager):
+    def _create_user(self, email, username, password=None, **kwargs):
+        if not username:
+            raise ValueError('아이디는 필수입니다.')
+        user = self.model(email=self.normalize_email(email), username=username **kwargs)
 
-    isCertificated = models.BooleanField(default=False) # 대학 인증 ?
-    isMatched = models.BooleanField(default=False)  # 매칭 중 ?
-    isWarned = models.BooleanField(default=False)   # 경고 회원 ?
-    isSuspended = models.BooleanField(default=False)    # 정지 회원 ?
-    isDelete = models.BooleanField(default=False)   # 삭제 회원 ?
+        user.set_password(password)
+        user.save(using=self._db)
+
+    def create_user(self, email, username, password, **kwargs):
+        kwargs.setdefault('is_admin', False)
+        return self._create_user(email, username, password, **kwargs)
+
+    def create_superuser(self, email, username, password, **kwargs):
+        kwargs.setdefault('is_admin', True)
+        return self._create_user(email, username, password, **kwargs)
+
+
+class User(AbstractBaseUser):
+
+    objects = MyUserManager()
+
+    REQUIRED_FIELDS = ['password', 'email']
+    USERNAME_FIELD = 'username'
+
+    uuid = models.UUIDField(
+        primary_key=True,
+        unique=True,
+        editable=False,
+        default=uuid.uuid4,
+        verbose_name='PK'
+    )
+
+    username = models.CharField(max_length=30, null=False, unique=True, verbose_name='아이디')
+    email = models.CharField(max_length=100, null=False, verbose_name='이메일')
+
+    is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
+    is_matched = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
+    is_warned = models.BooleanField(default=False, verbose_name='경고')   # 경고 회원 ?
+    is_suspended = models.BooleanField(default=False, verbose_name='정지 회원')    # 정지 회원 ?
+    is_delete = models.BooleanField(default=False, verbose_name='삭제된 회원')   # 삭제 회원 ?
+    is_active = models.BooleanField(default=True, verbose_name='활동 회원')   # 활동 회원 ?
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'users'
+        verbose_name = '유저'
+        verbose_name_plural = '유저들'
 
 
 GENDER = (
@@ -44,8 +83,9 @@ class Profile(models.Model):
     name = models.CharField(max_length=20, null=False)
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
-    location = models.ForeignKey()
-    avatar = models.ImageField(upload_to="/static/profile/%Y/%M")
+    latitude = models.DecimalField(decimal_places=7, max_digits=9)
+    longitude = models.DecimalField(decimal_places=7, max_digits=10)
+    avatar = models.ImageField()
 
     height = models.PositiveSmallIntegerField(null=True)
     weight = models.PositiveSmallIntegerField(null=True)
@@ -54,8 +94,5 @@ class Profile(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-
 
 

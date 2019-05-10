@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+from .config import DB, SECRET
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -81,15 +83,14 @@ WSGI_APPLICATION = 'yeonhadae.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-from .dbconfig import db
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': db['NAME'],
-        'USER': db['USER'],
-        'PASSWORD': db['PASSWORD'],
-        'HOST': db['HOST'],
-        'PORT': db['PORT']
+        'NAME': DB['NAME'],
+        'USER': DB['USER'],
+        'PASSWORD': DB['PASSWORD'],
+        'HOST': DB['HOST'],
+        'PORT': DB['PORT']
     }
 }
 
@@ -130,4 +131,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+
+AUTHENTICATION_BACKENDS = [
+    'auth.auth.UserBackend'
+]
+
 STATIC_URL = '/static/'
+
+# 미디어파일에 대한 URL Prefix
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+AUTH_USER_MODEL = 'user.User'
