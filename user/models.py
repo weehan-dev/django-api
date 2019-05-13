@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=10)
 
     username = models.CharField(max_length=30, null=False, unique=True, verbose_name='아이디')
-    email = models.CharField(max_length=100, null=False, verbose_name='이메일', blank=False)
+    email = models.EmailField(null=False, verbose_name='이메일', blank=False)
 
     is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
     is_matched = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
