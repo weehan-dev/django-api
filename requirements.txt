@@ -1,5 +1,9 @@
 Django==2.1.5
 djangorestframework==3.9.3
+djangorestframework-simplejwt==4.3.0
+djangorestframework-stubs==0.4.2
 mysqlclient==1.4.2.post1
 Pillow==6.0.0
+PyJWT==1.7.1
 pytz==2019.1
+uuid==1.30

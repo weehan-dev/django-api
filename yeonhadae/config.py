@@ -1,6 +1,6 @@
 DB = {
     'NAME': 'yeonhadae',
-    'USER': 'changhoi',
+    'USER': 'root',
     'PASSWORD': '0812',
     'HOST': 'localhost',
     'PORT': '3306'

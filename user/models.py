@@ -1,45 +1,46 @@
 import uuid as uuid
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 # Create your models here.
 
 
-class MyUserManager(BaseUserManager):
-    def _create_user(self, email, username, password=None, **kwargs):
-        if not username:
-            raise ValueError('아이디는 필수입니다.')
-        user = self.model(email=self.normalize_email(email), username=username **kwargs)
+class YHDUserManager(BaseUserManager):
+    def create_user(self, username, password=None, email=None):
+        if not username and not email:
+            raise ValueError('ID, Email은 필수입니다.')
+
+        user = self.model(
+            username=username,
+            email=email
+        )
 
         user.set_password(password)
         user.save(using=self._db)
+        return user
 
-    def create_user(self, email, username, password, **kwargs):
-        kwargs.setdefault('is_admin', False)
-        return self._create_user(email, username, password, **kwargs)
+    def create_superuser(self, username, password, email):
+        if not username and not email:
+            raise ValueError('ID, Email은 필수입니다.')
+        user = self.create_user(username, password, email)
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
-    def create_superuser(self, email, username, password, **kwargs):
-        kwargs.setdefault('is_admin', True)
-        return self._create_user(email, username, password, **kwargs)
 
+class User(AbstractBaseUser, PermissionsMixin):
 
-class User(AbstractBaseUser):
+    objects = YHDUserManager()
 
-    objects = MyUserManager()
-
-    REQUIRED_FIELDS = ['password', 'email']
+    REQUIRED_FIELDS = ['email']
     USERNAME_FIELD = 'username'
 
-    uuid = models.UUIDField(
-        primary_key=True,
-        unique=True,
-        editable=False,
-        default=uuid.uuid4,
-        verbose_name='PK'
-    )
+    first_name = models.CharField(max_length=10)
+    last_name = models.CharField(max_length=10)
 
     username = models.CharField(max_length=30, null=False, unique=True, verbose_name='아이디')
-    email = models.CharField(max_length=100, null=False, verbose_name='이메일')
+    email = models.CharField(max_length=100, null=False, verbose_name='이메일', blank=False)
 
     is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
     is_matched = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
@@ -51,6 +52,13 @@ class User(AbstractBaseUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.username
+
+    @property
+    def is_staff(self):
+        return self.is_superuser
+
     class Meta:
         db_table = 'users'
         verbose_name = '유저'
@@ -58,8 +66,8 @@ class User(AbstractBaseUser):
 
 
 GENDER = (
-    ('M', '남'),
-    ('F', '여')
+    ('M', '남자'),
+    ('F', '여자')
 )
 
 UNIV_LIST = (
