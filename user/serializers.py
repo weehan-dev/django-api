@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from user.models import User
+
+from user.models import User, Profile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,3 +24,37 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password']
+
+
+class NestedProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+
+class NestedUserInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+    """
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        return token
+    """
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+
+        data['refresh'] = str(refresh)
+        data['user'] = NestedUserInfoSerializer(self.user)
+        data['profile'] = NestedProfileSerializer(self.user.profile)
+
+        return data

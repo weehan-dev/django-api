@@ -20,15 +20,19 @@
 ## Pull 이후
 
 - `pip install -r requirements.txt`
-- yeonhadae/dbconfig.py 설정
+- yeonhadae/config.py 설정
 
 ```
-db = {
+DB = {
     'NAME': 'DB이름',
     'USER': '계정 이름',
     'PASSWORD': 'DB 비밀번호',
     'HOST': '호스트',
     'PORT': '포트'
+}
+
+EMAIL = {
+    
 }
 ``` 
 
