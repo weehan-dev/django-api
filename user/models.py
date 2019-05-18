@@ -102,5 +102,6 @@ class Profile(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    meeting = models.ForeignKey('Meeting', on_delete=models.CASCADE)
 
 
