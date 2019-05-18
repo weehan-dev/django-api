@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 # 일단 모두에게 API서버를 열었음
 
-
+# test
 # Application definition
 
 LOCAL_APPS = [
