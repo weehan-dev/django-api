@@ -97,7 +97,7 @@ class Profile(models.Model):
     height = models.PositiveSmallIntegerField(null=True)
     weight = models.PositiveSmallIntegerField(null=True)
     religion = models.CharField(max_length=10, null=False)
-    isSmoker = models.BooleanField()
+    is_smoker = models.BooleanField()
 
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
 
