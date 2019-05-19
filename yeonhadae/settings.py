@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ["*"]
 
 LOCAL_APPS = [
     'meeting',
-    'user'
+    'user',
 ]
 
 THIRD_PARTY_APPS = [

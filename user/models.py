@@ -1,8 +1,7 @@
-import uuid as uuid
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-
+from meeting.models import Team
 # Create your models here.
 
 
@@ -100,8 +99,9 @@ class Profile(models.Model):
     religion = models.CharField(max_length=10, null=False)
     isSmoker = models.BooleanField()
 
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    meeting = models.ForeignKey('Meeting', on_delete=models.CASCADE)
 
 
