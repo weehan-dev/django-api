@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('user.urls'))
+    path('auth/', include('user.urls')),
+    path('users/', include('userInfo.urls'))
 ]

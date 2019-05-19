@@ -85,19 +85,19 @@ RELIGION = (
 
 class Profile(models.Model):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE) # 연결
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True) # 연결
 
     name = models.CharField(max_length=20, null=False)
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
     latitude = models.DecimalField(decimal_places=7, max_digits=9)
     longitude = models.DecimalField(decimal_places=7, max_digits=10)
-    avatar = models.ImageField()
+    avatar = models.ImageField(null=True)
 
     height = models.PositiveSmallIntegerField(null=True)
     weight = models.PositiveSmallIntegerField(null=True)
     religion = models.CharField(max_length=10, null=False)
-    is_smoker = models.BooleanField()
+    is_smoker = models.BooleanField(null=False)
 
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
 

@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status
 from django.contrib.auth import get_user_model
 
-from user.serializers import UserSerializer, LoginSerializer, ProfileSerializer
+from user.serializers import UserSerializer, LoginSerializer
 
 # Create your views here.
 
@@ -32,20 +32,3 @@ class YHDTokenObtainPairView(TokenObtainPairView):
     serializer_class = LoginSerializer
 
 
-class Profile(APIView):
-
-    def post(self, request, format=None):
-        """
-        :body: user, name, gender, univ, latitude, longitude, avatar, height, weight, religion, is_smoker:
-        :return: json(success, message, data):
-        """
-
-        serializer = ProfileSerializer(data=request.data)
-
-        if serializer.is_valid():
-            profile = serializer.save()
-            if profile:
-                Response(status=status.HTTP_201_CREATED, data=profile)
-            Response(status=status.HTTP_501_NOT_IMPLEMENTED)
-
-        Response(status=status.HTTP_406_NOT_ACCEPTABLE)
