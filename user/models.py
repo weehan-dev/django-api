@@ -1,8 +1,7 @@
-import uuid as uuid
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-
+from meeting.models import Team
 # Create your models here.
 
 
@@ -86,22 +85,23 @@ RELIGION = (
 
 class Profile(models.Model):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE) # 연결
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True) # 연결
 
     name = models.CharField(max_length=20, null=False)
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
-    latitude = models.DecimalField(decimal_places=7, max_digits=9)
-    longitude = models.DecimalField(decimal_places=7, max_digits=10)
-    avatar = models.ImageField()
+    latitude = models.DecimalField(decimal_places=7, max_digits=9)  # TODO 이거 형식 알아야 함
+    longitude = models.DecimalField(decimal_places=7, max_digits=10)    # TODO 이거 형식 알아야 함
+    avatar = models.ImageField(null=True)
 
-    height = models.PositiveSmallIntegerField(null=True)
-    weight = models.PositiveSmallIntegerField(null=True)
+    height = models.PositiveSmallIntegerField(null=True)    # TODO 정수 -> 실수로 바꿔야 함
+    weight = models.PositiveSmallIntegerField(null=True)    # TODO 정수 -> 실수로 바꿔야 함
     religion = models.CharField(max_length=10, null=False)
-    isSmoker = models.BooleanField()
+    is_smoker = models.BooleanField(null=False)
+
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    meeting = models.ForeignKey('Meeting', on_delete=models.CASCADE)
 
 

@@ -6,6 +6,28 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from user.models import User, Profile
 
 
+class ChangeUserInfoSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(required=True, write_only=True)
+    password = serializers.CharField(required=True, min_length=7, write_only=True)
+
+    def validate(self, attrs):
+            raise serializers.ValidationError('이전 패스워드가 맞지 않습니다.')
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+        if password is not None:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = User
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at', 'email']
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(
@@ -33,20 +55,7 @@ class NestedProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class NestedUserInfoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = '__all__'
-
-
 class LoginSerializer(TokenObtainPairSerializer):
-    """
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        return token
-    """
 
     def validate(self, attrs):
         data = super().validate(attrs)
@@ -54,7 +63,10 @@ class LoginSerializer(TokenObtainPairSerializer):
         refresh = self.get_token(self.user)
 
         data['refresh'] = str(refresh)
-        data['user'] = NestedUserInfoSerializer(self.user)
-        data['profile'] = NestedProfileSerializer(self.user.profile)
-
-        return data
+        data['account'] = UserSerializer(self.user).data
+        try:
+            profile = Profile.objects.get(user=self.user)
+            data['profile'] = NestedProfileSerializer(profile).data
+            return data
+        except Profile.DoesNotExist:
+            return data

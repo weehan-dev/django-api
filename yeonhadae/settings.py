@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 from .config import DB, SECRET
 
@@ -35,7 +36,8 @@ ALLOWED_HOSTS = ["*"]
 
 LOCAL_APPS = [
     'meeting',
-    'user'
+    'user',
+    'userInfo',
 ]
 
 THIRD_PARTY_APPS = [
@@ -166,10 +168,13 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # JWT
 
-'''
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
+}
+
+"""
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 
@@ -189,5 +194,5 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-}
-'''
+    
+"""
