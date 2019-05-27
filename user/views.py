@@ -1,4 +1,3 @@
-from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -29,7 +28,6 @@ class ChangeAccountInformation(APIView):
                 return Response(status=status.HTTP_202_ACCEPTED, data=serializer.data)
             return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data=serializer.errors)
-
 
 
 class Signup(APIView):
