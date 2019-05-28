@@ -28,6 +28,7 @@ class YHDUserManager(BaseUserManager):
         return user
 
 
+# TODO is_matched, is_certificated 도 로그인시 시리얼라이징
 class User(AbstractBaseUser, PermissionsMixin):
 
     objects = YHDUserManager()
@@ -84,6 +85,8 @@ RELIGION = (
 
 
 class Profile(models.Model):
+
+    is_activated = models.BooleanField(default=False)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True) # 연결
 
