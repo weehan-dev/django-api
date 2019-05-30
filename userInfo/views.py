@@ -1,7 +1,7 @@
 # Create your views here.
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.response import Response
@@ -10,6 +10,18 @@ from user.models import User, Profile
 from userInfo.models import Token
 from userInfo.serializers import ProfileSerializer
 import random
+from yeonhadae.config import KAKAO_APP_KEY
+
+def map_view(request):
+    APP_KEY = KAKAO_APP_KEY
+
+    if request.method == 'GET':
+        print('이건 GET이다');
+        return render(request, "DaumPost.html", {"APP_KEY": APP_KEY})
+
+    else:
+        print('이건 POST다')
+        return render(request, "DaumPost.html", {"APP_KEY": APP_KEY})
 
 
 class SendMailToken(APIView):
