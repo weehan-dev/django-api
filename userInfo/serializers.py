@@ -6,7 +6,7 @@ from user.serializers import UserSerializer
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    avatar = serializers.ImageField(use_url=True)
+    avatar = serializers.ImageField(use_url=True, allow_null=True, default=None)
 
     def create(self, validated_data):
         return Profile.objects.create(**validated_data)

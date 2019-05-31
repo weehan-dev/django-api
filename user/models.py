@@ -72,7 +72,8 @@ GENDER = (
 
 UNIV_LIST = (
     ('Hanyang', '한양대학교'),
-    ('Sejong', '세종대학교')
+    ('Sejong', '세종대학교'),
+    ('Kunkuk', '건국대학교')
 )
 
 RELIGION = (
@@ -84,6 +85,7 @@ RELIGION = (
 )
 
 
+# TODO Profile은 userInfo 앱으로 옮기는게 좋을듯
 class Profile(models.Model):
 
     is_activated = models.BooleanField(default=False)
@@ -93,12 +95,15 @@ class Profile(models.Model):
     name = models.CharField(max_length=20, null=False)
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
-    latitude = models.DecimalField(decimal_places=7, max_digits=9)  # TODO 이거 형식 알아야 함
-    longitude = models.DecimalField(decimal_places=7, max_digits=10)    # TODO 이거 형식 알아야 함
     avatar = models.ImageField(null=True)
 
-    height = models.PositiveSmallIntegerField(null=True)    # TODO 정수 -> 실수로 바꿔야 함
-    weight = models.PositiveSmallIntegerField(null=True)    # TODO 정수 -> 실수로 바꿔야 함
+    city = models.CharField(max_length=5, default='서울시')
+    state = models.CharField(max_length=5, default='성동구')
+    latitude = models.DecimalField(decimal_places=7, max_digits=9, null=True)  # TODO 이거 형식 알아야 함, Expo에서 구현하기 어려울 듯 eject해야함
+    longitude = models.DecimalField(decimal_places=7, max_digits=10, null=True)    # TODO 이거 형식 알아야 함, 마찬가지
+
+    height = models.DecimalField(null=True, decimal_places=2, max_digits=5)
+    weight = models.DecimalField(null=True, decimal_places=2, max_digits=5)
     religion = models.CharField(max_length=10, null=False)
     is_smoker = models.BooleanField(null=False)
 
