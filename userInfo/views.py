@@ -1,6 +1,8 @@
 # Create your views here.
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from django.core.mail.message import EmailMultiAlternatives
-from django.db import models
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from rest_framework import status
@@ -22,6 +24,21 @@ def map_view(request):
     else:
         print('이건 POST다')
         return render(request, "DaumPost.html", {"APP_KEY": APP_KEY})
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def validate_token(request, id):
+    try:
+        user = User.objects.get(id=id)
+        if (request.user == user) and (request.user.username == request.data['username']):
+            Response(status=status.HTTP_200_OK, data={"success": True, "message": "유효한 토큰입니다."})
+        else:
+            raise PermissionError
+
+    except PermissionError:
+        Response(status=status.HTTP_400_BAD_REQUEST, data={"success": False, "message": "비정상적 접근입니다."})
+
+
 
 
 class SendMailToken(APIView):
