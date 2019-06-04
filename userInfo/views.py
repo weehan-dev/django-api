@@ -30,8 +30,10 @@ def map_view(request):
 def validate_token(request, id):
     try:
         user = User.objects.get(id=id)
-        if (request.user == user) and (request.user.username == request.data['username']):
-            Response(status=status.HTTP_200_OK, data={"success": True, "message": "유효한 토큰입니다."})
+        print('유저 잘 찾음')
+        if request.user == user:
+            print(request.user, user)
+            return Response(status=status.HTTP_200_OK, data={"success": True, "message": "유효한 토큰입니다."})
         else:
             raise PermissionError
 

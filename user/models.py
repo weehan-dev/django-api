@@ -71,9 +71,9 @@ GENDER = (
 )
 
 UNIV_LIST = (
-    ('Hanyang', '한양대학교'),
-    ('Sejong', '세종대학교'),
-    ('Kunkuk', '건국대학교')
+    ('hanyang', '한양대학교'),
+    ('sejong', '세종대학교'),
+    ('kunkuk', '건국대학교')
 )
 
 RELIGION = (
