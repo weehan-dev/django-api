@@ -1,7 +1,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from meeting.models import Team
+from meeting.models import Team as JaeheeTeam
+from matching.models import Team as ChanghoiTeam
 # Create your models here.
 
 
@@ -43,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, null=False, verbose_name='이메일', blank=False)
 
     is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
-    is_matched = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
+    has_team = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
     is_warned = models.BooleanField(default=False, verbose_name='경고')   # 경고 회원 ?
     is_suspended = models.BooleanField(default=False, verbose_name='정지 회원')    # 정지 회원 ?
     is_delete = models.BooleanField(default=False, verbose_name='삭제된 회원')   # 삭제 회원 ?
@@ -107,7 +108,9 @@ class Profile(models.Model):
     religion = models.CharField(max_length=10, null=False)
     is_smoker = models.BooleanField(null=False)
 
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    follower = models.ManyToManyField("self", blank=True) # 유저를 친구주가함
+    following = models.ManyToManyField("self", blank=True) # 유저가 친구추가함
+    team = models.ForeignKey(ChanghoiTeam, on_delete=models.SET_NULL, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
