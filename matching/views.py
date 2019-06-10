@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from matching.models import Team
-from user.models import Profile, User
+from user.models import User
 from matching.serializers import TeamMembersSerializer
 # Create your views here.
 
@@ -31,7 +31,7 @@ class InviteTeam(APIView):
             members_id = request.POST['members']
             try:
                 print(members_id)
-                members = map(lambda id: self.make_user_object(id), members_id.strip('[]').split(', '))
+                members = list(map(lambda id: self.make_user_object(id), members_id.strip('[]').split(', ')))
 
                 for target in members:
                     if not self.is_friend(request.user, target):
@@ -41,7 +41,7 @@ class InviteTeam(APIView):
 
                 age_sum = 0
                 team = Team(location=request.user.profile.state, hope_age=request.POST['hopeAge'])
-
+                members.append(request.user)
                 for user in members:
                     age_sum += user.profile.age
                     user.profile.team = team
@@ -50,7 +50,9 @@ class InviteTeam(APIView):
                     user.profile.save()
 
                 team.avg_age = round(age_sum / len(members))
+                team.versus = len(members)
                 serializer = TeamMembersSerializer(team)
+
                 if serializer.is_valid():
                     serializer.save()
                     return Response(status=status.HTTP_201_CREATED, data=serializer.data)

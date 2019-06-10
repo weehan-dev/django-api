@@ -5,6 +5,8 @@ from django.db import models
 
 class Team(models.Model):
 
+    versus = models.PositiveSmallIntegerField()
+
     avg_age = models.DecimalField()
     location = models.CharField(max_length=10)
     hope_age = models.DecimalField(default=None, null=True)
