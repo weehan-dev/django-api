@@ -1,10 +1,18 @@
 from rest_framework import serializers
 from matching.models import Team
+from user.models import Profile
 
 
-class CreateTeamSerializer(serializers.ModelSerializer):
+class NestedMembersSerializer(serializers.ModelSerializer):
 
-    members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    class Meta:
+        model = Profile
+        fields = ['name', 'gender', 'univ', 'avatar', 'age']
+
+
+class TeamMembersSerializer(serializers.ModelSerializer):
+
+    members = NestedMembersSerializer(many=True, read_only=True)
 
     class Meta:
         model = Team

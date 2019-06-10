@@ -1,7 +1,6 @@
 # Create your views here.
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from django.core.mail.message import EmailMultiAlternatives
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
@@ -10,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from user.models import User, Profile
 from userInfo.models import Token
-from userInfo.serializers import ProfileSerializer
+from userInfo.serializers import ProfileSerializer, FollowerSerializer, FollowingSerializer
 import random
 from yeonhadae.config import KAKAO_APP_KEY
 
@@ -136,3 +135,70 @@ class HandleProfile(APIView):
                 return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data=serializer.errors)
 
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data=serializer.errors)
+
+
+class FollowUser(APIView):
+
+    def get(self, request):
+        user = request.user
+        serializer = FollowingSerializer(user.profile)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+    def post(self, request, target_id):
+        user = request.user
+        try:
+            target = User.objects.get(id=target_id)
+
+            user_have_target = len(user.profile.following.filter(id=target_id))
+
+            if user_have_target:
+                raise Exception('이미 팔로우 중입니다.')
+
+            target.profile.follower.add(request.user)
+            target.profile.save()
+
+            request.user.profile.following.add(target)
+            request.user.profile.save()
+
+            serializer = FollowingSerializer(user.profile)
+            serializer.save()
+
+            return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 유저를 찾을 수 없습니다.'})
+
+    def delete(self, request, target_id):
+        try:
+            user = request.user
+            target = User.objects.get(id=target_id)
+
+            user_has_target = len(user.profile.following.filter(id=target_id))
+
+            if not user_has_target:
+                raise Exception('친구 목록에 없습니다.')
+
+            user.profile.following.remove(target)
+            user.save()
+
+            serializer = FollowingSerializer(user.profile)
+            serializer.save()
+
+            return Response(status=status.HTTP_200_OK, data={'message': serializer.data})
+
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 유저를 찾을 수 없습니다.'})
+
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e})
+
+
+class FollwerList(APIView):
+
+    def get(self, request):
+        user = request.user
+        serializer = FollowerSerializer(user.profile)
+        serializer.save()
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)

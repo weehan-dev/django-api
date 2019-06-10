@@ -1,7 +1,7 @@
 from django.urls import path
-from matching.views import MakeTeam
+from matching import views
 
 urlpatterns = [
-    path('try/', MakeTeam.as_view(), name="try_match"),
-
+    path('team/', views.InviteTeam.as_view(), name="make_team"),
+    path('team/leave/', views.LeaveTeam.as_view(), name='leave_team'),
 ]

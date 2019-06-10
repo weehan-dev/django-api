@@ -97,6 +97,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
     avatar = models.ImageField(null=True)
+    age = models.PositiveSmallIntegerField(default=20, null=False),
 
     city = models.CharField(max_length=5, default='서울시')
     state = models.CharField(max_length=5, default='성동구')
@@ -108,9 +109,9 @@ class Profile(models.Model):
     religion = models.CharField(max_length=10, null=False)
     is_smoker = models.BooleanField(null=False)
 
-    follower = models.ManyToManyField("self", blank=True) # 유저를 친구주가함
+    follower = models.ManyToManyField("self", blank=True) # 유저를 친구추가함
     following = models.ManyToManyField("self", blank=True) # 유저가 친구추가함
-    team = models.ForeignKey(ChanghoiTeam, on_delete=models.SET_NULL, null=True)
+    team = models.ForeignKey(ChanghoiTeam, on_delete=models.SET_NULL, null=True, related_name="members")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
