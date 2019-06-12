@@ -1,7 +1,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from meeting.models import Team
+from meeting.models import Team as JaeheeTeam
+from matching.models import Team as ChanghoiTeam
 # Create your models here.
 
 
@@ -42,8 +43,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=30, null=False, unique=True, verbose_name='아이디')
     email = models.EmailField(unique=True, null=False, verbose_name='이메일', blank=False)
 
+    has_team = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
+    has_profile = models.BooleanField(default=False, verbose_name='프로필 존재 여부')
+
     is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
-    is_matched = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
     is_warned = models.BooleanField(default=False, verbose_name='경고')   # 경고 회원 ?
     is_suspended = models.BooleanField(default=False, verbose_name='정지 회원')    # 정지 회원 ?
     is_delete = models.BooleanField(default=False, verbose_name='삭제된 회원')   # 삭제 회원 ?
@@ -96,6 +99,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
     avatar = models.ImageField(null=True)
+    age = models.IntegerField(null=False)
 
     city = models.CharField(max_length=5, default='서울시')
     state = models.CharField(max_length=5, default='성동구')
@@ -107,7 +111,9 @@ class Profile(models.Model):
     religion = models.CharField(max_length=10, null=False)
     is_smoker = models.BooleanField(null=False)
 
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    follower = models.ManyToManyField("self", blank=True, default=None) # 유저를 친구추가함
+    following = models.ManyToManyField("self", blank=True, default=None) # 유저가 친구추가함
+    team = models.ForeignKey(ChanghoiTeam, on_delete=models.SET_NULL, null=True, related_name="members")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
