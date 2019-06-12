@@ -37,7 +37,7 @@ def validate_token(request, id):
             raise PermissionError
 
     except PermissionError:
-        Response(status=status.HTTP_400_BAD_REQUEST, data={"success": False, "message": "비정상적 접근입니다."})
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={"success": False, "message": "비정상적 접근입니다."})
 
 
 
@@ -68,7 +68,7 @@ class SendMailToken(APIView):
         email.attach_alternative(html_content, "text/html")
         email.send()
 
-        return Response(status=status.HTTP_201_CREATED, data={"success": True, "data": "메일이 발송되었습니다."})
+        return Response(status=status.HTTP_201_CREATED, data={"success": True, "message": "메일이 발송되었습니다.", 'data': token})
 
 
 class VerifyMailToken(APIView):
@@ -127,6 +127,10 @@ class HandleProfile(APIView):
                 profile = serializer.save()
                 if profile:
                     profile.user = request.user
+                    profile.follower.set([])
+                    profile.following.set([])
+                    user.has_profile = True
+                    user.save()
                     profile.save()
                     print(request.user.profile)
 
@@ -139,40 +143,39 @@ class HandleProfile(APIView):
 
 class FollowUser(APIView):
 
-    def get(self, request):
-        user = request.user
-        serializer = FollowingSerializer(user.profile)
-        serializer.save()
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
-
     def post(self, request, target_id):
         user = request.user
         try:
-            target = User.objects.get(id=target_id)
+            if not user.has_profile:
+                raise Exception('프로필을 먼저 작성해주세요.')
+
+            target = Profile.objects.get(id=target_id)
 
             user_have_target = len(user.profile.following.filter(id=target_id))
+
 
             if user_have_target:
                 raise Exception('이미 팔로우 중입니다.')
 
-            target.profile.follower.add(request.user)
-            target.profile.save()
+            target.follower.add(user.profile)
+            target.save()
 
-            request.user.profile.following.add(target)
-            request.user.profile.save()
+            user.profile.following.add(target)
+            user.profile.save()
 
             serializer = FollowingSerializer(user.profile)
-            serializer.save()
-
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
 
-        except User.DoesNotExist:
+        except Profile.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 유저를 찾을 수 없습니다.'})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': str(e)})
+
 
     def delete(self, request, target_id):
         try:
             user = request.user
-            target = User.objects.get(id=target_id)
+            target = Profile.objects.get(id=target_id)
 
             user_has_target = len(user.profile.following.filter(id=target_id))
 
@@ -180,10 +183,7 @@ class FollowUser(APIView):
                 raise Exception('친구 목록에 없습니다.')
 
             user.profile.following.remove(target)
-            user.save()
-
             serializer = FollowingSerializer(user.profile)
-            serializer.save()
 
             return Response(status=status.HTTP_200_OK, data={'message': serializer.data})
 
@@ -191,7 +191,14 @@ class FollowUser(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 유저를 찾을 수 없습니다.'})
 
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': e})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': str(e)})
+
+
+class FollowingList(APIView):
+    def get(self, request):
+        user = request.user
+        serializer = FollowingSerializer(user.profile)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
 class FollwerList(APIView):
@@ -199,6 +206,4 @@ class FollwerList(APIView):
     def get(self, request):
         user = request.user
         serializer = FollowerSerializer(user.profile)
-        serializer.save()
-
         return Response(status=status.HTTP_200_OK, data=serializer.data)

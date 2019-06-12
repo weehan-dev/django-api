@@ -1,13 +1,22 @@
 from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
 from matching import views as matching_views
-from django.urls
 
 # Create your tests here.
 from user.models import User
 
+
 class TeamTest(APITestCase):
+    def setUp(self):
+        self.username = 'root'
+        self.user = User.objects.get(username='root')
+        self.client.force_login(user=user)
+
     def test_invite_team(self):
-        pass
+        """
+        [id, ... ], hopeAge
+        :return: 201 or 400
+        """
+        response = self.client.post();
 
 
 factory = APIRequestFactory()

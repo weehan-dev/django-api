@@ -5,13 +5,13 @@ from django.db import models
 
 class Team(models.Model):
 
-    versus = models.PositiveSmallIntegerField()
+    versus = models.IntegerField()
 
-    avg_age = models.DecimalField()
+    avg_age = models.IntegerField(null=False)
     location = models.CharField(max_length=10)
-    hope_age = models.DecimalField(default=None, null=True)
+    hope_age = models.IntegerField(default=None, null=True)
 
     is_matched = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

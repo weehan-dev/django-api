@@ -43,8 +43,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=30, null=False, unique=True, verbose_name='아이디')
     email = models.EmailField(unique=True, null=False, verbose_name='이메일', blank=False)
 
-    is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
     has_team = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
+    has_profile = models.BooleanField(default=False, verbose_name='프로필 존재 여부')
+
+    is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
     is_warned = models.BooleanField(default=False, verbose_name='경고')   # 경고 회원 ?
     is_suspended = models.BooleanField(default=False, verbose_name='정지 회원')    # 정지 회원 ?
     is_delete = models.BooleanField(default=False, verbose_name='삭제된 회원')   # 삭제 회원 ?
@@ -97,7 +99,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER, null=False)
     univ = models.CharField(max_length=15, choices=UNIV_LIST, null=False)
     avatar = models.ImageField(null=True)
-    age = models.PositiveSmallIntegerField(default=20, null=False),
+    age = models.IntegerField(null=False)
 
     city = models.CharField(max_length=5, default='서울시')
     state = models.CharField(max_length=5, default='성동구')
@@ -109,8 +111,8 @@ class Profile(models.Model):
     religion = models.CharField(max_length=10, null=False)
     is_smoker = models.BooleanField(null=False)
 
-    follower = models.ManyToManyField("self", blank=True) # 유저를 친구추가함
-    following = models.ManyToManyField("self", blank=True) # 유저가 친구추가함
+    follower = models.ManyToManyField("self", blank=True, default=None) # 유저를 친구추가함
+    following = models.ManyToManyField("self", blank=True, default=None) # 유저가 친구추가함
     team = models.ForeignKey(ChanghoiTeam, on_delete=models.SET_NULL, null=True, related_name="members")
 
     created_at = models.DateTimeField(auto_now_add=True)
