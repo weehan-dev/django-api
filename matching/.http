@@ -1,0 +1,42 @@
+GET http://localhost:8000/matching/1
+Accept: application/json
+
+### 로그인
+
+POST http://localhost:8000/auth/login/
+Content-Type: application/json
+
+{
+  "username": "root",
+  "password": "root"
+}
+
+### 토큰 확인
+
+POST http://localhost:8000/users/1/api/validate-token/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTYwNTAxMTQ1LCJqdGkiOiI4Y2JjYzFkZDdlM2M0OGRhYWE5ZGJmOTgzN2QyMzEwMyIsInVzZXJfaWQiOjF9.VfWimFlE8v5ThVcvqnKZHWeQPntNlJWpFxYevRgKT50
+{}
+
+### 팀 만들기
+
+POST http://localhost:8000/matching/team/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTYwNTAxMTQ1LCJqdGkiOiI4Y2JjYzFkZDdlM2M0OGRhYWE5ZGJmOTgzN2QyMzEwMyIsInVzZXJfaWQiOjF9.VfWimFlE8v5ThVcvqnKZHWeQPntNlJWpFxYevRgKT50
+
+{
+  "members": [2],
+  "hopeAge": 25
+}
+
+###
+
+DELETE http://localhost:8000/matching/team/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNTYwNTAxMTQ1LCJqdGkiOiI4Y2JjYzFkZDdlM2M0OGRhYWE5ZGJmOTgzN2QyMzEwMyIsInVzZXJfaWQiOjF9.VfWimFlE8v5ThVcvqnKZHWeQPntNlJWpFxYevRgKT50
+
+{
+
+}
+
+###

@@ -7,6 +7,8 @@ class Team(models.Model):
 
     versus = models.IntegerField()
 
+    leader = models.PositiveIntegerField(null=False)
+
     avg_age = models.IntegerField(null=False)
     location = models.CharField(max_length=10)
     hope_age = models.IntegerField(default=None, null=True)

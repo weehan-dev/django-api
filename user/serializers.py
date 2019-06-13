@@ -39,13 +39,18 @@ class UserSerializer(serializers.ModelSerializer):
     )
     password = serializers.CharField(min_length=7, write_only=True)
 
+    has_team = serializers.BooleanField(read_only=True)
+    has_profile = serializers.BooleanField(read_only=True)
+    is_certificated =serializers.BooleanField(read_only=True)
+    is_suspended =serializers.BooleanField(read_only=True)
+
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'has_team', 'has_profile']
+        fields = ['id', 'username', 'email', 'password', 'has_team', 'has_profile', 'is_certificated', 'is_suspended']
 
 
 class NestedProfileSerializer(serializers.ModelSerializer):
