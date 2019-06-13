@@ -47,24 +47,19 @@ class InviteTeam(APIView):
                     raise Exception('상대방의 친구 목록에 유저가 없습니다.')
 
             age_sum = 0
-            team = Team(location=request.user.profile.state, hope_age=request.POST['hopeAge'])
+            team = Team.objects.create(location=request.user.profile.state, hope_age=request.POST['hopeAge'], versus=0, avg_age=0)
             members.append(request.user)
             for user in members:
                 age_sum += user.profile.age
-                user.profile.team = team
+                team.versus += 1
+                team.members.add(user.profile)
                 user.has_team = True
                 user.save()
 
             team.avg_age = round(age_sum / len(members))
-            team.versus = len(members)
+            team.save()
             serializer = TeamMembersSerializer(team)
-
-            if serializer.is_valid():
-                serializer.save()
-                return Response(status=status.HTTP_201_CREATED, data=serializer.data)
-            else:
-                raise Exception('유효하지 않은 요청입니다.')
-
+            return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         except User.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': '존재하지 않는 유저입니다.'})
 
@@ -78,6 +73,9 @@ class LeaveTeam(APIView):
             user = request.user
             if not user.has_team:
                 raise Exception('팀이 존재하지 않습니다.')
+            user.has_team = False
+            user.save()
+
             team = user.profile.team
             team.members.remove(user)
             if not team.members.all():

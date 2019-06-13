@@ -29,7 +29,6 @@ class YHDUserManager(BaseUserManager):
         return user
 
 
-# TODO is_matched, is_certificated 도 로그인시 시리얼라이징
 class User(AbstractBaseUser, PermissionsMixin):
 
     objects = YHDUserManager()
