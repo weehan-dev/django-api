@@ -1,10 +1,25 @@
+from functools import reduce
+
 from rest_framework import status
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from matching.models import Team
 from user.models import User, Profile
-from matching.serializers import TeamMembersSerializer
+from matching.serializers import TeamMembersSerializer, UserAndProfileSerializer
 # Create your views here.
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
+def reset_team(request):
+    user = request.user.profile
+    user.team = None
+    user.save()
+    serializer = UserAndProfileSerializer(user)
+    return Response(status=status.HTTP_200_OK, data=serializer.data)
+
 
 
 class InviteTeam(APIView):
@@ -73,11 +88,15 @@ class LeaveTeam(APIView):
             user = request.user
             if not user.has_team:
                 raise Exception('팀이 존재하지 않습니다.')
+            team = user.profile.team
+            team.members.remove(user.profile)
+            team.versus -= 1
+            team.avg_age = round(reduce(lambda x, y: x + y, team.members.all(), 0) / team.versus)
+            team.save()
+
             user.has_team = False
             user.save()
 
-            team = user.profile.team
-            team.members.remove(user)
             if not team.members.all():
                 team.delete()
 
