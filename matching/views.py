@@ -2,7 +2,7 @@ from functools import reduce
 
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from matching.models import Team
@@ -14,11 +14,27 @@ from matching.serializers import TeamMembersSerializer, UserAndProfileSerializer
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def reset_team(request):
-    user = request.user.profile
-    user.team = None
+
+    user = request.user
+
+    user.profile.team = None
+    user.has_team = False
+
     user.save()
-    serializer = UserAndProfileSerializer(user)
+    serializer = UserAndProfileSerializer(user.profile)
     return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def view_team(request, team_id):
+
+    try:
+        team = Team.objects.get(id=team_id)
+        serializer = TeamMembersSerializer(team)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+    except Team.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 팀이 없습니다.'})
 
 
 
@@ -91,17 +107,21 @@ class LeaveTeam(APIView):
             team = user.profile.team
             team.members.remove(user.profile)
             team.versus -= 1
-            team.avg_age = round(reduce(lambda x, y: x + y, team.members.all(), 0) / team.versus)
-            team.save()
 
-            user.has_team = False
-            user.save()
-
-            if not team.members.all():
+            if not team.versus:
                 team.delete()
+                user.has_team = False
+                user.save()
+                return Response(status=status.HTTP_204_NO_CONTENT, data={'message': '팀이 삭제되었습니다.'})
+            else:
+                team.avg_age = round(reduce(lambda x, y: x + y, [i for i in map(lambda profile: profile.age, team.members.all())], 0) / team.versus)
+                team.save()
 
-            serializer = TeamMembersSerializer(team)
-            return Response(status=status.HTTP_204_NO_CONTENT, data=serializer.data)
+                user.has_team = False
+                user.save()
+
+                serializer = TeamMembersSerializer(team)
+                return Response(status=status.HTTP_204_NO_CONTENT, data=serializer.data)
 
         except Team.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 팀이 존재하지 않습니다.'})
