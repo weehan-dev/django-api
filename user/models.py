@@ -45,6 +45,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     has_team = models.BooleanField(default=False, verbose_name='매칭 중')  # 매칭 중 ?
     has_profile = models.BooleanField(default=False, verbose_name='프로필 존재 여부')
 
+    notification_token = models.CharField(null=True, max_length=100)
+
     is_certificated = models.BooleanField(default=False, verbose_name='대학 인증') # 대학 인증 ?
     is_warned = models.BooleanField(default=False, verbose_name='경고')   # 경고 회원 ?
     is_suspended = models.BooleanField(default=False, verbose_name='정지 회원')    # 정지 회원 ?

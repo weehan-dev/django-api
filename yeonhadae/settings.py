@@ -38,7 +38,8 @@ LOCAL_APPS = [
     'meeting',
     'user',
     'userInfo',
-    'matching'
+    'matching',
+    'notification'
 ]
 
 THIRD_PARTY_APPS = [
