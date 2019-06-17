@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from user.models import User, Profile
 from userInfo.models import Token
 from userInfo.serializers import ProfileSerializer, FollowerSerializer, FollowingSerializer
+from notification.views import send_push_message
 import random
 from yeonhadae.config import KAKAO_APP_KEY
 
@@ -29,17 +30,13 @@ def map_view(request):
 def validate_token(request, id):
     try:
         user = User.objects.get(id=id)
-        print('유저 잘 찾음')
         if request.user == user:
-            print(request.user, user)
             return Response(status=status.HTTP_200_OK, data={"success": True, "message": "유효한 토큰입니다."})
         else:
             raise PermissionError
 
     except PermissionError:
         return Response(status=status.HTTP_400_BAD_REQUEST, data={"success": False, "message": "비정상적 접근입니다."})
-
-
 
 
 class SendMailToken(APIView):
@@ -156,12 +153,16 @@ class FollowUser(APIView):
 
             if user_have_target:
                 raise Exception('이미 팔로우 중입니다.')
-
             target.follower.add(user.profile)
             target.save()
 
             user.profile.following.add(target)
             user.profile.save()
+
+            if target.user.notification_token:
+                target_token = target.user.notification_token
+                message = "새로운 팔로워: {0}".format(user.profile.name)
+                send_push_message(target_token=target_token, message=message)
 
             serializer = FollowingSerializer(user.profile)
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
@@ -170,7 +171,6 @@ class FollowUser(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': '해당 유저를 찾을 수 없습니다.'})
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'message': str(e)})
-
 
     def delete(self, request, target_id):
         try:

@@ -12,7 +12,7 @@ class Notification(models.Model):
         ('match', 'Match')
     )
 
-    creator = models.ForeignKey(Profile)
+    creator = models.ForeignKey(Profile, on_delete=models.CASCADE)
     notification_type = models.CharField(max_length=10, choices=TYPE)
     comment = models.TextField(null=True, blank=True)
 
