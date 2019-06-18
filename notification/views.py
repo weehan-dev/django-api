@@ -46,15 +46,12 @@ def set_notification_token(request, id):
         user = User.objects.get(id=id)
         if request.user != user:
             raise Exception('타인의 정보를 수정할 수 없습니다.')
-        print(request.POST.get('token'))
-        notification_token = request.POST.get('token')
+        print(request.data.get('token'))
+        notification_token = request.data.get('token')
         print(notification_token)
         if notification_token:
-            print(notification_token, ': 토큰은 있슴')
             user.notification_token = notification_token
-            print('데이터 입력 끝')
             user.save()
-            print('데이터 저장 끝')
 
             return Response(status=status.HTTP_202_ACCEPTED, data={'message': '알림 설정 완료'})
         raise Exception('토큰 정보가 없습니다.')
