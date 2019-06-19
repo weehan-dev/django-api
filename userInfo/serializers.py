@@ -18,7 +18,7 @@ class LittleProfileInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['user', 'name', 'age', 'avatar', 'gender']
+        fields = ['user', 'name', 'age', 'avatar', 'gender', 'id']
 
 
 
