@@ -93,11 +93,11 @@ WSGI_APPLICATION = 'yeonhadae.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'yeonhadae',
-        'USER': 'eugene',
-        'PASSWORD': '0410',
-        'HOST': 'localhost',
-        'PORT': '3306'
+        'NAME': DB['NAME'],
+        'USER': DB['USER'],
+        'PASSWORD': DB['PASSWORD'],
+        'HOST': DB['HOST'],
+        'PORT': DB['PORT']
     }
 }
 
