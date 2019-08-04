@@ -5,6 +5,7 @@ from meeting.serializers import ProfileSerializer
 from user.models import User
 from meeting.models import Team
 from meeting.form import TeamForm
+
 class ShowSearchingProfile():
     def post(self, request, format=None):
         term = 1 # 리퀘스트에서 검색 용어 찾아야 함
@@ -15,6 +16,7 @@ class ShowSearchingProfile():
                 return Response(status=status.HTTP_200_OK, data=serializer.data)
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)# 유저가 이미 매칭 중이라는 것을 알려줄 리턴
         return Response(status=status.HTTP_404_NOT_FOUND)# 유저가 없을 때 리턴
+
 class TeamMaking():
     def team_update(request):
         team = request.team
