@@ -54,7 +54,7 @@ class YHDTokenObtainPairView(TokenObtainPairView):
 
 
 """
-유진
+유진 / 회원 정보 수정 할거임
 """
 class DeleteUser(APIView):
     """
