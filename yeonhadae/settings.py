@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
 ] + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
@@ -92,11 +93,11 @@ WSGI_APPLICATION = 'yeonhadae.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': DB['NAME'],
-        'USER': DB['USER'],
-        'PASSWORD': DB['PASSWORD'],
-        'HOST': DB['HOST'],
-        'PORT': DB['PORT']
+        'NAME': 'yeonhadae',
+        'USER': 'eugene',
+        'PASSWORD': '0410',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 
@@ -157,7 +158,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication'
     ]
 }
-
+"""
 from yeonhadae.config import EMAIL
 
 EMAIL_HOST = EMAIL['HOST']
@@ -167,7 +168,7 @@ EMAIL_PORT = EMAIL['PORT']
 EMAIL_USE_TLS = True
 SERVER_EMAIL = EMAIL['SERVER_MAIL']
 DEFAULT_FROM_EMAIL = EMAIL['DEFAULT_FROM_MAIL']
-
+"""
 # JWT
 
 
@@ -196,5 +197,5 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-    
+
 """

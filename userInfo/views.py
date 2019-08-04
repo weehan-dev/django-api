@@ -12,8 +12,8 @@ from userInfo.models import Token
 from userInfo.serializers import ProfileSerializer, FollowerSerializer, FollowingSerializer
 from notification.views import send_push_message
 import random
-from yeonhadae.config import KAKAO_APP_KEY
-
+#from yeonhadae.config import KAKAO_APP_KEY
+"""
 def map_view(request):
     APP_KEY = KAKAO_APP_KEY
 
@@ -24,7 +24,7 @@ def map_view(request):
     else:
         print('이건 POST다')
         return render(request, "DaumPost.html", {"APP_KEY": APP_KEY})
-
+"""
 @api_view(['POST'])
 @permission_classes((IsAuthenticated, ))
 def validate_token(request, id):

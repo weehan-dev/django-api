@@ -5,7 +5,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from user.models import User, Profile
 
-
 class ChangeUserInfoSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(required=True, write_only=True)
     password = serializers.CharField(required=True, min_length=7, write_only=True)

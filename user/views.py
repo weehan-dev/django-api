@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.decorators import login_required
 from user.serializers import UserSerializer, LoginSerializer
+from django.shortcuts import get_object_or_404
+
 
 # Create your views here.
 
@@ -51,3 +53,19 @@ class YHDTokenObtainPairView(TokenObtainPairView):
     serializer_class = LoginSerializer
 
 
+"""
+유진
+"""
+class DeleteUser(APIView):
+    """
+    회원 탈퇴
+    """
+    def delete(self, request, id, format=None):
+        user = get_object_or_404(User, id=id)
+        # 비밀번호 요구
+        password = request.data['password']
+        if not request.user.check_password(password):
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data='비밀번호가 맞지 않습니다.')
+        else:
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT, data={"username" : user.username, "password" : user.password, "success": True})
