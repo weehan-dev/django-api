@@ -1,6 +1,6 @@
 Django==2.1.7
 django-stubs==0.12.1
-djangorestframework==3.9.3
+djangorestframework==3.11.2
 djangorestframework-simplejwt==4.3.0
 djangorestframework-stubs==0.4.2
 mypy==0.701
